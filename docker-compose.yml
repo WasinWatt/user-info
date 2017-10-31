@@ -4,9 +4,39 @@ services:
     asset_mapping:
         build: asset_mapping
         ports:
-            - "28017:28017"
+            - "27017:27017"
 
     asset_mapping_seed:
         build: asset_mapping_seed
         links:
             - asset_mapping
+            
+    asset_service:
+        build: asset_service
+        ports:
+            - "3030:3030"
+        links:
+            - asset_mapping
+        environment:    
+            MONGO_URL: "asset_mapping" 
+            
+    user_data:
+        build: user_data
+        environment:
+            MYSQL_ROOT_PASSWORD: "notesource"            
+            
+    user_account_service:
+        build: user_account_service
+        ports:
+            - "8080:8080"
+        links:
+            - user_data
+            - asset_service      
+        environment:
+            MYSQL_URL: "user_data"  
+            ASSET_URL: "asset_service"
+        
+    
+                   
+            
+    
